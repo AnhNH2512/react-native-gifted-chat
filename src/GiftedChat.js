@@ -65,6 +65,8 @@ class GiftedChat extends React.Component {
     this.getLocale = this.getLocale.bind(this);
     this.onInputSizeChanged = this.onInputSizeChanged.bind(this);
     this.onInputTextChanged = this.onInputTextChanged.bind(this);
+    this.recalculateHeight = this.recalculateHeight.bind(this);
+
     this.onMainViewLayout = this.onMainViewLayout.bind(this);
     this.onInitialLayoutViewLayout = this.onInitialLayoutViewLayout.bind(this);
 
@@ -112,11 +114,26 @@ class GiftedChat extends React.Component {
     this.setIsMounted(false);
   }
 
-  componentWillReceiveProps(nextProps = {}) {
+  componentWillReceiveProps(nextProps = {}, prevProps) {
     const { messages, text } = nextProps;
     this.setMessages(messages || []);
     this.setTextFromProp(text);
+
+    if (nextProps.minInputToolbarHeight !== prevProps.minInputToolbarHeight) {
+      setTimeout(() => {
+        this.recalculateHeight();
+      }, 50);
+    }
   }
+
+  recalculateHeight() {
+    const newComposerHeight = MIN_COMPOSER_HEIGHT;
+    const newMessagesContainerHeight = this.getMessagesContainerHeightWithKeyboard(newComposerHeight);
+    this.setState({
+      composerHeight: newComposerHeight,
+      messagesContainerHeight: this.prepareMessagesContainerHeight(newMessagesContainerHeight),
+    });
+  };
 
   initLocale() {
     if (this.props.locale === null || moment.locales().indexOf(this.props.locale) === -1) {
