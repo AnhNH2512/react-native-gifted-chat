@@ -9,23 +9,28 @@ import {
 
 import moment from 'moment';
 
-import { isSameDay, isSameUser, warnDeprecated } from './utils';
+import { isSameDay, isSameUser, warnDeprecated, isIn5Minute } from './utils';
 
 export default class Day extends React.Component {
   render() {
-    const { dateFormat } = this.props;
-
-    if (!isSameDay(this.props.currentMessage, this.props.previousMessage)) {
+    const firstMessageDateFormat = "YYYY/MM/DD HH:mm";
+    const outRange5MinuteDateFormat = "HH:mm";
+    const dateString = !isSameDay(this.props.currentMessage, this.props.previousMessage)?
+      moment(this.props.currentMessage.createdAt).locale(this.context.getLocale()).format(firstMessageDateFormat).toUpperCase() :
+      !isIn5Minute(this.props.currentMessage, this.props.previousMessage) ?
+        moment(this.props.currentMessage.createdAt).locale(this.context.getLocale()).format(outRange5MinuteDateFormat).toUpperCase() :
+        "";
+    if (dateString.length > 0) {
       return (
         <View style={[styles.container, this.props.containerStyle]}>
           <View style={[styles.wrapper, this.props.wrapperStyle]}>
             <Text style={[styles.text, this.props.textStyle]}>
-              {moment(this.props.currentMessage.createdAt).locale(this.context.getLocale()).format(dateFormat).toUpperCase()}
+              {dateString}
             </Text>
           </View>
         </View>
       );
-    }
+    } else
     return null;
   }
 }
