@@ -14,8 +14,23 @@ export function isSameDay(currentMessage = {}, diffMessage = {}) {
   if (!currentCreatedAt.isValid() || !diffCreatedAt.isValid()) {
     return false;
   }
-
   return currentCreatedAt.isSame(diffCreatedAt, 'day');
+
+}
+
+export function isIn5Minute(currentMessage = {}, diffMessage = {}) {
+
+  if (!diffMessage.createdAt) {
+    return false
+  }
+
+  let currentCreatedAt = moment(currentMessage.createdAt);
+  let diffCreatedAt = moment(diffMessage.createdAt);
+
+  if (!currentCreatedAt.isValid() || !diffCreatedAt.isValid()) {
+    return false;
+  }
+  return Math.abs(currentCreatedAt.diff(diffCreatedAt, 'seconds')) < 60 * 5;
 
 }
 
